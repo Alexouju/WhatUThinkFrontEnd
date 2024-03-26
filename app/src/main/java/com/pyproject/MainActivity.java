@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TouchColorChangeListener touchListener = new TouchColorChangeListener(forgotPasswordTextView);
         forgotPasswordTextView.setOnTouchListener(touchListener);
 
+
         forgotPasswordTextView.setOnClickListener(this);
     }
 
