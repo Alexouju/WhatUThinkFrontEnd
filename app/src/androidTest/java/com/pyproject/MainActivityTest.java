@@ -57,15 +57,14 @@ public class MainActivityTest {
 
     @Test
     public void ensureLoginButtonWorks() {
-        // Type text and press the button
+
         onView(withId(R.id.editTextTextEmailAddress))
                 .perform(typeText("user@example.com"), closeSoftKeyboard());
         onView(withId(R.id.editTextTextPassword))
                 .perform(typeText("password123"), closeSoftKeyboard());
-        onView(withId(R.id.loginButton)) // Replace with your actual login button id
+        onView(withId(R.id.loginButton))
                 .perform(click());
 
-        // Check that ProductsActivity was opened
         Intents.init();
         intended(hasComponent(ProductsActivity.class.getName()));
         Intents.release();
