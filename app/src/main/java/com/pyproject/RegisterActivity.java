@@ -44,8 +44,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String username = usernameEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
+        //Testing
 
-        // Implement your registration logic here
-        // You may want to validate the input fields before proceeding with registration
     }
 }
