@@ -10,6 +10,9 @@ import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,10 +23,22 @@ import com.android.volley.toolbox.Volley;
 
 public class ProductsActivity extends AppCompatActivity{
 
+    private RecyclerView recyclerView;
+    private ProductAdapter productAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Initialize RecyclerView and Adapter
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        productAdapter = new ProductAdapter();
+        recyclerView.setAdapter(productAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     // Override onCreateOptionsMenu to inflate the menu
@@ -69,7 +84,7 @@ public class ProductsActivity extends AppCompatActivity{
 
     private void searchProducts(String query) {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://<your_backend_ip>/search-products?query=" + Uri.encode(query);
+        String url = "http://192.168.102.240/search-products?query=" + Uri.encode(query);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {

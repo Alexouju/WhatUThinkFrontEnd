@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ProductsActivity">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@drawable/ic_search"
-        app:queryHint="Search products..."/>
-
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,15 +15,18 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Your content, such as a RecyclerView for the product list -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_products"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar" />
+        android:layout_marginTop="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/product_list_item" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
