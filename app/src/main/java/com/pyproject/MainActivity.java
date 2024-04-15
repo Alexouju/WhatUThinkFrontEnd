@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Instantiate the RequestQueue
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        String url = "http://192.168.102.240/login"; // Ensure this is the correct URL
+        String url = "http://192.168.0.106/login"; // Ensure this is the correct URL
 
         // Request a string response from the provided URL
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -126,5 +126,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // go to RegisterActivity
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
+    }
+
+    public void continueAsGuestPressed(View view) {
+        Intent intent = new Intent(this, ProductsActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
