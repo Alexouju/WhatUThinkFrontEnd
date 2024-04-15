@@ -1,5 +1,6 @@
 package com.pyproject;
 
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -41,7 +42,6 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class MainActivityTest {
@@ -69,6 +69,45 @@ public class MainActivityTest {
         intended(hasComponent(ProductsActivity.class.getName()));
         Intents.release();
     }
+
+    @Test
+    public void ensureErrorIsDisplayedOnFailedLogin() {
+
+        onView(withId(R.id.editTextTextEmailAddress))
+                .perform(typeText("wronguser@example.com"), closeSoftKeyboard());
+        onView(withId(R.id.editTextTextPassword))
+                .perform(typeText("wrongpassword"), closeSoftKeyboard());
+        onView(withId(R.id.loginButton)) // Replace with your actual login button id
+                .perform(click());
+
+
+        onView(withText("Unknown response from server"))
+                .inRoot((Matcher<Root>) new ToastMatcher())
+                .check(matches(isDisplayed()));
+    }
+
+}
+
+class ToastMatcher extends TypeSafeMatcher<Root> {
+    @Override
+    public void describeTo(Description description) {
+        description.appendText("is toast");
+    }
+
+    @Override
+    public boolean matchesSafely(Root root) {
+        int type = root.getWindowLayoutParams().get().type;
+        if ((type == WindowManager.LayoutParams.TYPE_TOAST)) {
+            IBinder windowToken = root.getDecorView().getWindowToken();
+            IBinder appToken = root.getDecorView().getApplicationWindowToken();
+            if (windowToken == appToken) {
+
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 
