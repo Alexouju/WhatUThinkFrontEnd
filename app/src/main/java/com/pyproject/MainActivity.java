@@ -78,9 +78,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             String message = jsonResponse.optString("message", null);
                             if ("Login successful".equals(message)) {
                                 // Navigate to LoginActivity
-                                //Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                                //startActivity(intent);
-                                //finish(); // Finish MainActivity
+                                Intent intent = new Intent(MainActivity.this, ProductsActivity.class);
+                                startActivity(intent);
+                                finish(); // Finish MainActivity
                             } else {
                                 // If "message" is not as expected or missing, handle it appropriately
                                 String error = jsonResponse.optString("error", "Unknown response from server");
