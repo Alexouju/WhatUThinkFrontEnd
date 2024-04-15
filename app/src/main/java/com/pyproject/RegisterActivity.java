@@ -64,7 +64,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         // Instantiate the RequestQueue
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://192.168.102.240/register";  // Verify this is the correct IP and port
+        String url = "http://192.168.1.177/register";  // Verify this is the correct IP and port
 
         // Request a string response from the provided URL
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
