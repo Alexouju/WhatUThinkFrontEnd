@@ -3,17 +3,19 @@ package com.pyproject;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Map;
 
 // Product.java
 public class Product {
     private String name;
     private String description;
     private String aiDescription;
-    private Specification specifications; // Specification object
+    private Map<String, String> specifications;
+
     private List<Review> reviews;
     private List<String> pictures;
 
-    public Product(String name, String description, String aiDescription, Specification specifications, List<Review> reviews, List<String> pictures) {
+    public Product(String name, String description, String aiDescription, Map<String, String> specifications, List<Review> reviews, List<String> pictures) {
         this.name = name;
         this.description = description;
         this.aiDescription = aiDescription;
@@ -29,8 +31,13 @@ public class Product {
     public List<Review> getReviews() { return reviews; }
     public void setReviews(List<Review> reviews) { this.reviews = reviews; }
 
-    public Specification getSpecifications() { return specifications; }
-    public void setSpecifications(Specification specifications) { this.specifications = specifications; }
+    public Map<String, String> getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(Map<String, String> specifications) {
+        this.specifications = specifications;
+    }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 

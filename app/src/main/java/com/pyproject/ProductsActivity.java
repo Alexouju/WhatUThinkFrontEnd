@@ -32,8 +32,10 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ProductsActivity extends AppCompatActivity {
 
@@ -151,9 +153,17 @@ public class ProductsActivity extends AppCompatActivity {
             String name = productObject.get("name").getAsString();
             JsonElement specsElement = productObject.get("specifications");
 
-            Specification specifications = null;
-            if (specsElement.isJsonObject()) {
-                specifications = context.deserialize(specsElement, Specification.class);
+            Map<String, String> specifications = new HashMap<>();
+            String specificationsStr = "Not specified";
+            if (specsElement != null) {
+                if (specsElement.isJsonObject()) {
+                    Type specsType = new TypeToken<Map<String, String>>(){}.getType();
+                    specifications = context.deserialize(specsElement, specsType);
+                } else if (specsElement.isJsonPrimitive() && specsElement.getAsJsonPrimitive().isString()) {
+                    specificationsStr = specsElement.getAsString();
+                    // The specificationsStr can be added to the Map with a generic key or handled separately
+                    specifications.put("General", specificationsStr);
+                }
             }
 
             // Assuming `Review` is a properly structured class based on your JSON

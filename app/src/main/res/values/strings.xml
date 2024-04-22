@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PyProject</string>
+    <string name="app_name">WhatUThink</string>
     <string name="login">Login</string>
     <string name="search">Search</string>
 </resources>
