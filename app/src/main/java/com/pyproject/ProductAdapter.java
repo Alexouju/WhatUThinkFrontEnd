@@ -1,10 +1,11 @@
 package com.pyproject;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,58 +15,62 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
     private final List<Product> productList;
+    private final LayoutInflater inflater;
 
-    public ProductAdapter() {
-        this.productList = new ArrayList<>();
+
+
+    public interface OnItemClickListener {
+        void onItemClick(Product product);
     }
+    private final OnItemClickListener listener;
 
-    public void setProductList(List<Product> productList) {
-        this.productList.clear();
-        this.productList.addAll(productList);
-        notifyDataSetChanged();
+
+    public ProductAdapter(Context context, List<Product> productList, OnItemClickListener listener) {
+        this.inflater = LayoutInflater.from(context);
+        this.productList = new ArrayList<>();
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.product_list_item, parent, false);
-        return new ProductViewHolder(view);
+        View itemView = inflater.inflate(R.layout.product_item, parent, false);
+        return new ProductViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        Product product = productList.get(position);
-        holder.productName.setText(product.getName());
-        // Set other product details on the holder views ...
+        Product currentProduct = productList.get(position);
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(currentProduct));
+        holder.productNameTextView.setText(currentProduct.getName());
+        holder.productDescriptionTextView.setText(currentProduct.getDescription());
     }
 
     @Override
     public int getItemCount() {
-        return productList.size();
-    }
-
-    static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView productName;
-
-        public ProductViewHolder(@NonNull View itemView) {
-            super(itemView);
-            productName = itemView.findViewById(R.id.product_name);
+        if (productList != null) {
+            return productList.size();
+        } else {
+            return 0;
         }
     }
-}
 
-// A simple data class to represent a Product. Fill in attributes accordingly.
-class Product {
-    private final String name;
-    // Add other product attributes such as image, description, etc.
-
-    public Product(String name) {
-        this.name = name;
+    public void setProductList(List<Product> products) {
+        productList.clear();
+        productList.addAll(products);
+        notifyDataSetChanged();
     }
 
-    public String getName() {
-        return name;
-    }
-}
+    public class ProductViewHolder extends RecyclerView.ViewHolder {
+        final TextView productNameTextView;
+        final TextView productDescriptionTextView;
 
+        public ProductViewHolder(View itemView) {
+            super(itemView);
+            productNameTextView = itemView.findViewById(R.id.product_name_text_view);
+            productDescriptionTextView = itemView.findViewById(R.id.product_description_text_view);
+        }
+    }
+
+
+}

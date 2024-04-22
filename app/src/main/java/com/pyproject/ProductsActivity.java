@@ -1,105 +1,129 @@
 package com.pyproject;
 
-import android.app.SearchManager;
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-
+import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class ProductsActivity extends AppCompatActivity{
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class ProductsActivity extends AppCompatActivity {
+
 
     private RecyclerView recyclerView;
     private ProductAdapter productAdapter;
+    private List<Product> productList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // Initialize RecyclerView and Adapter
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        productAdapter = new ProductAdapter();
-        recyclerView.setAdapter(productAdapter);
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
 
-    // Override onCreateOptionsMenu to inflate the menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_products, menu);
-        final MenuItem item = menu.findItem(R.id.search);
-        final SearchView searchView = (SearchView) item.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // Perform the final search when the user submits the search query
-                searchProducts(query);
-                return true;
-            }
+        productAdapter = new ProductAdapter(this, productList, product -> {
+            Intent intent = new Intent(ProductsActivity.this, ProductDetailActivity.class);
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // Optionally perform a live search as the user types
-                return false;
-            }
+            // Serialize the product object to JSON (as a simple method for passing complex data)
+            Gson gson = new Gson();
+            String productJson = gson.toJson(product);
+            intent.putExtra("PRODUCT_JSON", productJson);
+
+            startActivity(intent);
         });
+        recyclerView.setAdapter(productAdapter);
 
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                // Optionally reset the search when closed
-                return false;
-            }
-        });
-
-        return true;
+        fetchProducts();
     }
 
-    // If you also want to handle menu item clicks, override this method
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Handle each menu item click here
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void searchProducts(String query) {
+    private void fetchProducts() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "http://192.168.102.240/search-products?query=" + Uri.encode(query);
+        String url = "http://192.168.1.172/all-products"; // Replace with your actual URL
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(String response) {
-                        // Handle the JSON response and update your adapter
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Handle error
-                    }
-                });
+                    public void onResponse(JSONArray response) {
+                        ProductsActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                productAdapter.setProductList(productList);
+                            }
+                        });
+                        // Parse the JSON response into a List of Product objects
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(Product.class, new ProductDeserializer())
+                                .create();
 
-        queue.add(stringRequest);
+                        productList.clear(); // Clear the existing product list
+
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject productJson = response.getJSONObject(i);
+                                String key = productJson.keys().next();
+                                Product product = gson.fromJson(productJson.getJSONObject(key).toString(), Product.class);
+                                productList.add(product);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        Log.d("Response", "Number of products fetched: " + productList.size());
+                        // Update the adapter with the new product list
+                        productAdapter.setProductList(productList);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Volley", "Error fetching products: " + error.getMessage());
+            }
+        });
+
+        queue.add(jsonArrayRequest);
+    }
+    private static class ProductDeserializer implements JsonDeserializer<Product> {
+        @Override
+        public Product deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            Log.d("Deserializer", "Deserializing: " + json.toString());
+            JsonObject productObject = json.getAsJsonObject();
+            String aiDescription = productObject.has("ai_description") && !productObject.get("ai_description").isJsonNull() ? productObject.get("ai_description").getAsString() : null;
+            String description = productObject.get("description").getAsString();
+            String name = productObject.get("name").getAsString();
+            JsonElement specsElement = productObject.get("specifications");
+
+            Specification specifications = null;
+            if (specsElement.isJsonObject()) {
+                specifications = context.deserialize(specsElement, Specification.class);
+            }
+
+            // Assuming `Review` is a properly structured class based on your JSON
+            Type reviewListType = new TypeToken<List<Review>>(){}.getType();
+            List<Review> reviews = context.deserialize(productObject.get("reviews"), reviewListType);
+
+            return new Product(name, description, aiDescription, specifications, reviews, new ArrayList<String>());
+        }
     }
 }
