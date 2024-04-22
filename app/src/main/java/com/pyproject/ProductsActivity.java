@@ -3,7 +3,13 @@ package com.pyproject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.Request;
@@ -44,7 +50,11 @@ public class ProductsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         productAdapter = new ProductAdapter(this, productList, product -> {
+
             Intent intent = new Intent(ProductsActivity.this, ProductDetailActivity.class);
 
             // Serialize the product object to JSON (as a simple method for passing complex data)
@@ -57,6 +67,33 @@ public class ProductsActivity extends AppCompatActivity {
         recyclerView.setAdapter(productAdapter);
 
         fetchProducts();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_products, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        // Listener for search query text changes
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Called when the user submits the query
+                searchProducts(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Called when the search text changes
+                searchProducts(newText);
+                return true;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void fetchProducts() {
@@ -124,6 +161,21 @@ public class ProductsActivity extends AppCompatActivity {
             List<Review> reviews = context.deserialize(productObject.get("reviews"), reviewListType);
 
             return new Product(name, description, aiDescription, specifications, reviews, new ArrayList<String>());
+        }
+    }
+
+    private void searchProducts(String query) {
+        // Filter productList based on query (assumes productList is all available products)
+        if (query == null || query.isEmpty()) {
+            productAdapter.setProductList(productList);
+        } else {
+            List<Product> filteredList = new ArrayList<>();
+            for (Product product : productList) {
+                if (product.getName().toLowerCase().contains(query.toLowerCase())) {
+                    filteredList.add(product);
+                }
+            }
+            productAdapter.setProductList(filteredList);
         }
     }
 }

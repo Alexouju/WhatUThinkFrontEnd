@@ -15,7 +15,9 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
+            android:background="?attr/colorPrimary"
+            app:titleTextColor="@android:color/white"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -25,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
+        android:background="#9276C3"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/product_list_item" />
 
