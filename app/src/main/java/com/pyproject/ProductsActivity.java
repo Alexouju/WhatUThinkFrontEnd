@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
@@ -143,6 +145,13 @@ public class ProductsActivity extends AppCompatActivity {
 
         queue.add(jsonArrayRequest);
     }
+
+    public void goToAddProductActivity(View view) {
+        Intent intent = new Intent(ProductsActivity.this, AddNewProductActivity.class);
+
+        startActivity(intent);
+    }
+
     private static class ProductDeserializer implements JsonDeserializer<Product> {
         @Override
         public Product deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

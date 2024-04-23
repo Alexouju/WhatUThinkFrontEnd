@@ -31,5 +31,14 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/product_list_item" />
 
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="225dp"
+        android:layout_height="wrap_content"
+        android:onClick="goToAddProductActivity"
+        android:text="Add product"
+        app:layout_anchor="@+id/recyclerView"
+        app:layout_anchorGravity="bottom|center" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
