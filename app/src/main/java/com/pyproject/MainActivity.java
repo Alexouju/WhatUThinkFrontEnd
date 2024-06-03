@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
-test
+
     public void loginPressed(View view) {
         final String usernameOrEmail = usernameEditText.getText().toString().trim();
         final String password = passwordEditText.getText().toString().trim();
