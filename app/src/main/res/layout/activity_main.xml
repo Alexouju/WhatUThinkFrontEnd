@@ -42,7 +42,7 @@
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
-        android:minHeight="48dp"
+        android:minHeight="47dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.507"
